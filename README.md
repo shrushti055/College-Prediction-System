@@ -129,6 +129,23 @@ previous_year_closing_percentile, previous_year_closing_rank,
 cutoff_trend_3yr, admission_probability
 ```
 
+
+## Screenshots
+
+### Home Page
+![Home Page](screenshots/home.jpeg)
+
+### Login / Registration
+![Login Page](screenshots/register.jpeg)
+
+### Student Profile Input
+![Student Profile](screenshots/predict.jpeg)
+
+### College Recommendation Results
+![Recommendation Results](screenshots/perdiction.jpeg)
+
+
+
 ## Note
 
 The dataset is synthetic/sample data for project demonstration. For final submission, replace `data/dataset.csv` with official CAP/JEE/MHT-CET data.
@@ -166,22 +183,5 @@ python manage.py seed_career_services
 python manage.py train_model
 python manage.py runserver
 ```
-
-
-
-
-## Screenshots
-
-### Home Page
-![Home Page](screenshots/home.jpeg)
-
-### Login / Registration
-![Login Page](screenshots/register.jpeg)
-
-### Student Profile Input
-![Student Profile](screenshots/predict.jpeg)
-
-### College Recommendation Results
-![Recommendation Results](screenshots/perdiction.jpeg)
 
 
