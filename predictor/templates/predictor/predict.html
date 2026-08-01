@@ -1,0 +1,1346 @@
+{% extends 'predictor/base.html' %}
+{% block title %}Predict Colleges | College Predictor ML{% endblock %}
+
+{% block content %}
+<style>
+/* ==========================================================
+   Unique Professional Prediction Dashboard UI
+   Scoped to .predict-studio only
+========================================================== */
+
+.predict-studio {
+    min-height: calc(100vh - 80px);
+    background:
+        radial-gradient(circle at 8% 10%, rgba(37, 99, 235, .12), transparent 28%),
+        radial-gradient(circle at 86% 16%, rgba(20, 184, 166, .12), transparent 32%),
+        linear-gradient(180deg, #f8fbff 0%, #eef4fb 46%, #ffffff 100%);
+    overflow: hidden;
+    position: relative;
+    padding: 34px 0 70px;
+}
+
+.predict-studio::before,
+.predict-studio::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+    filter: blur(2px);
+    opacity: .55;
+    animation: floatPredict 9s ease-in-out infinite;
+}
+
+.predict-studio::before {
+    width: 280px;
+    height: 280px;
+    left: -110px;
+    top: 190px;
+    background: linear-gradient(135deg, rgba(37,99,235,.20), rgba(20,184,166,.16));
+}
+
+.predict-studio::after {
+    width: 220px;
+    height: 220px;
+    right: -88px;
+    top: 740px;
+    background: linear-gradient(135deg, rgba(124,58,237,.17), rgba(249,115,22,.14));
+    animation-delay: 1.2s;
+}
+
+@keyframes floatPredict {
+    0%, 100% { transform: translate3d(0,0,0) scale(1); }
+    50% { transform: translate3d(18px,-24px,0) scale(1.04); }
+}
+
+@keyframes fadeUpPredict {
+    from { opacity: 0; transform: translateY(28px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lineSweep {
+    from { transform: translateX(-42%); }
+    to { transform: translateX(42%); }
+}
+
+.predict-shell {
+    position: relative;
+    z-index: 2;
+}
+
+.predict-hero {
+    position: relative;
+    min-height: 410px;
+    border-radius: 38px;
+    overflow: hidden;
+    color: #ffffff;
+    background:
+        linear-gradient(135deg, rgba(7, 17, 31, .95), rgba(29, 78, 216, .88), rgba(15, 118, 110, .86)),
+        url("https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1700&q=80");
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 32px 90px rgba(15, 23, 42, .28);
+    animation: fadeUpPredict .65s ease both;
+}
+
+.predict-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 74% 20%, rgba(255,255,255,.16), transparent 28%),
+        linear-gradient(90deg, rgba(7,17,31,.24), transparent);
+}
+
+.predict-hero-grid {
+    position: relative;
+    z-index: 2;
+    min-height: 410px;
+    display: grid;
+    grid-template-columns: 1.16fr .84fr;
+    gap: 34px;
+    align-items: center;
+    padding: 48px;
+}
+
+.predict-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    color: #ffffff;
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.25);
+    backdrop-filter: blur(14px);
+    font-size: 13px;
+    font-weight: 950;
+}
+
+.predict-title {
+    font-size: clamp(36px, 5vw, 66px);
+    line-height: .98;
+    font-weight: 950;
+    letter-spacing: -2px;
+    margin: 20px 0 16px;
+}
+
+.predict-subtitle {
+    max-width: 760px;
+    color: rgba(255,255,255,.82);
+    font-size: 17px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.hero-model-card {
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.22);
+    backdrop-filter: blur(18px);
+    border-radius: 32px;
+    padding: 26px;
+    box-shadow: 0 28px 70px rgba(15,23,42,.24);
+}
+
+.model-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.model-card-top h3 {
+    margin: 0 0 5px;
+    font-weight: 950;
+    color: #ffffff;
+}
+
+.model-card-top p {
+    margin: 0;
+    color: rgba(255,255,255,.74);
+    font-size: 13px;
+}
+
+.model-icon {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border-radius: 21px;
+    background: rgba(255,255,255,.16);
+    color: #ffffff;
+    flex: 0 0 auto;
+}
+
+.model-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.model-stat {
+    border-radius: 19px;
+    padding: 15px;
+    text-align: center;
+    background: rgba(255,255,255,.13);
+    border: 1px solid rgba(255,255,255,.18);
+}
+
+.model-stat b {
+    display: block;
+    color: #ffffff;
+    font-size: 19px;
+    font-weight: 950;
+    line-height: 1.15;
+}
+
+.model-stat span {
+    display: block;
+    margin-top: 5px;
+    color: rgba(255,255,255,.72);
+    font-size: 11px;
+    font-weight: 850;
+}
+
+.quick-summary-strip {
+    margin-top: -44px;
+    position: relative;
+    z-index: 6;
+    animation: fadeUpPredict .8s ease .12s both;
+}
+
+.quick-summary-card {
+    background: rgba(255,255,255,.96);
+    border: 1px solid rgba(226,232,240,.95);
+    box-shadow: 0 24px 70px rgba(15,23,42,.12);
+    border-radius: 30px;
+    padding: 22px;
+}
+
+.quick-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.quick-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.quick-icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 17px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2563eb, #14b8a6);
+    flex: 0 0 auto;
+}
+
+.quick-item b {
+    display: block;
+    color: #0f172a;
+    font-weight: 950;
+}
+
+.quick-item span {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.predict-workspace {
+    display: grid;
+    grid-template-columns: 390px 1fr;
+    gap: 24px;
+    margin-top: 34px;
+    align-items: start;
+    animation: fadeUpPredict .85s ease .16s both;
+}
+
+.input-panel {
+    border-radius: 32px;
+    background: #ffffff;
+    border: 1px solid rgba(226,232,240,.95);
+    box-shadow: 0 24px 70px rgba(15,23,42,.10);
+    overflow: hidden;
+    position: sticky;
+    top: 96px;
+}
+
+.input-panel-head {
+    padding: 24px;
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
+    color: #ffffff;
+}
+
+.input-panel-head span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.13);
+    font-size: 12px;
+    font-weight: 900;
+    margin-bottom: 12px;
+}
+
+.input-panel-head h3 {
+    margin: 0 0 6px;
+    font-weight: 950;
+}
+
+.input-panel-head p {
+    margin: 0;
+    color: rgba(255,255,255,.72);
+    font-size: 13px;
+}
+
+.input-panel-body {
+    padding: 24px;
+}
+
+.form-section {
+    margin-bottom: 22px;
+}
+
+.form-section-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #0f172a;
+    font-weight: 950;
+    font-size: 14px;
+    margin-bottom: 14px;
+}
+
+.form-section-title span {
+    width: 30px;
+    height: 30px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    color: #2563eb;
+    background: #eff6ff;
+    font-size: 13px;
+}
+
+.predict-form label {
+    color: #334155;
+    font-size: 12px;
+    font-weight: 900;
+    margin-bottom: 7px;
+}
+
+.predict-form input,
+.predict-form select,
+.predict-form textarea {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #dbe4f0 !important;
+    border-radius: 15px !important;
+    padding: 10px 12px !important;
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    font-weight: 750;
+    box-shadow: none !important;
+}
+
+.predict-form input:focus,
+.predict-form select:focus,
+.predict-form textarea:focus {
+    background: #ffffff !important;
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 4px rgba(37,99,235,.12) !important;
+    outline: 0 !important;
+}
+
+.predict-form .errorlist {
+    margin: 7px 0 0;
+    color: #dc2626;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.predict-submit-btn {
+    width: 100%;
+    min-height: 54px;
+    border: 0;
+    border-radius: 999px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2563eb, #14b8a6);
+    font-weight: 950;
+    box-shadow: 0 18px 34px rgba(37,99,235,.24);
+    transition: .25s ease;
+}
+
+.predict-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 24px 46px rgba(37,99,235,.30);
+}
+
+.result-panel {
+    min-width: 0;
+}
+
+.result-overview-card {
+    border-radius: 32px;
+    background: #ffffff;
+    border: 1px solid rgba(226,232,240,.95);
+    box-shadow: 0 24px 70px rgba(15,23,42,.10);
+    overflow: hidden;
+}
+
+.result-panel-head {
+    padding: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 18px;
+    border-bottom: 1px solid #e2e8f0;
+    background:
+        radial-gradient(circle at 0% 0%, rgba(37,99,235,.11), transparent 32%),
+        linear-gradient(135deg, #ffffff, #f8fafc);
+}
+
+.result-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    color: #1d4ed8;
+    background: #eff6ff;
+    font-size: 12px;
+    font-weight: 950;
+    margin-bottom: 12px;
+}
+
+.result-panel-head h2 {
+    color: #0f172a;
+    font-weight: 950;
+    letter-spacing: -.8px;
+    margin: 0 0 6px;
+}
+
+.result-panel-head p {
+    color: #64748b;
+    margin: 0;
+}
+
+.print-btn-pro {
+    border: 1px solid #dbe4f0;
+    background: #ffffff;
+    color: #0f172a;
+    border-radius: 999px;
+    padding: 12px 18px;
+    font-weight: 950;
+    white-space: nowrap;
+    transition: .22s ease;
+}
+
+.print-btn-pro:hover {
+    background: #0f172a;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.result-body {
+    padding: 28px;
+}
+
+.result-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 24px;
+}
+
+.result-metric {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    padding: 18px;
+    min-height: 114px;
+}
+
+.result-metric::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 0%, rgba(37,99,235,.13), transparent 35%);
+}
+
+.result-metric-icon {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 15px;
+    background: #eff6ff;
+    color: #2563eb;
+    margin-bottom: 12px;
+}
+
+.result-metric b {
+    position: relative;
+    display: block;
+    color: #0f172a;
+    font-size: 26px;
+    font-weight: 950;
+    line-height: 1;
+}
+
+.result-metric span {
+    position: relative;
+    display: block;
+    color: #64748b;
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.top-college-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.top-college-card {
+    border-radius: 26px;
+    border: 1px solid #e2e8f0;
+    background: linear-gradient(135deg, #ffffff, #f8fafc);
+    padding: 20px;
+    transition: .25s ease;
+}
+
+.top-college-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 48px rgba(15,23,42,.10);
+    border-color: #bfdbfe;
+}
+
+.rank-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 11px;
+    border-radius: 999px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2563eb, #14b8a6);
+    font-size: 12px;
+    font-weight: 950;
+    margin-bottom: 14px;
+}
+
+.top-college-card h4 {
+    color: #0f172a;
+    font-size: 16px;
+    font-weight: 950;
+    line-height: 1.35;
+    margin-bottom: 8px;
+}
+
+.top-college-card p {
+    color: #64748b;
+    margin: 0 0 14px;
+    font-size: 12px;
+}
+
+.probability-strip {
+    height: 10px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.probability-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #2563eb, #14b8a6);
+}
+
+.top-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 900;
+    color: #334155;
+}
+
+.table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    margin: 22px 0 14px;
+}
+
+.table-toolbar h4 {
+    margin: 0;
+    color: #0f172a;
+    font-weight: 950;
+}
+
+.table-search {
+    max-width: 320px;
+    width: 100%;
+    border: 1px solid #dbe4f0;
+    background: #f8fafc;
+    border-radius: 999px;
+    padding: 11px 16px;
+    font-weight: 750;
+}
+
+.table-search:focus {
+    outline: 0;
+    background: #ffffff;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+}
+
+.results-table-wrap {
+    border: 1px solid #e2e8f0;
+    border-radius: 26px;
+    overflow: auto;
+    max-height: 720px;
+    background: #ffffff;
+}
+
+.results-table {
+    margin: 0;
+    min-width: 1320px;
+}
+
+.results-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 950;
+    border: 0;
+    padding: 14px;
+    white-space: nowrap;
+}
+
+.results-table tbody td {
+    padding: 15px 14px;
+    vertical-align: middle;
+    border-color: #eef2f7;
+    color: #334155;
+    font-size: 13px;
+}
+
+.results-table tbody tr {
+    transition: .18s ease;
+}
+
+.results-table tbody tr:hover {
+    background: #f8fbff;
+}
+
+.college-name-cell {
+    min-width: 250px;
+}
+
+.college-name-cell b {
+    display: block;
+    color: #0f172a;
+    font-weight: 950;
+    line-height: 1.35;
+}
+
+.college-name-cell small {
+    color: #64748b;
+}
+
+.table-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 950;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.probability-mini {
+    min-width: 130px;
+}
+
+.probability-mini-track {
+    height: 9px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.probability-mini-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #2563eb, #14b8a6);
+}
+
+.empty-recommendation {
+    min-height: 430px;
+    border-radius: 30px;
+    border: 1px dashed #bfdbfe;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(37,99,235,.09), transparent 30%),
+        #f8fbff;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 38px;
+}
+
+.empty-icon {
+    width: 86px;
+    height: 86px;
+    border-radius: 30px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 18px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2563eb, #14b8a6);
+    box-shadow: 0 20px 44px rgba(37,99,235,.22);
+}
+
+.empty-recommendation h3 {
+    color: #0f172a;
+    font-weight: 950;
+    margin-bottom: 8px;
+}
+
+.empty-recommendation p {
+    color: #64748b;
+    margin: 0;
+    max-width: 520px;
+}
+
+.guidance-section {
+    margin-top: 26px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.guidance-card {
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    border-radius: 26px;
+    padding: 22px;
+    box-shadow: 0 20px 55px rgba(15,23,42,.07);
+    transition: .25s ease;
+}
+
+.guidance-card:hover {
+    transform: translateY(-5px);
+}
+
+.guidance-icon {
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2563eb, #14b8a6);
+    margin-bottom: 15px;
+}
+
+.guidance-card h4 {
+    color: #0f172a;
+    font-weight: 950;
+    font-size: 17px;
+    margin-bottom: 8px;
+}
+
+.guidance-card p {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+@media (max-width: 1199px) {
+    .predict-hero-grid,
+    .predict-workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .input-panel {
+        position: static;
+    }
+
+    .quick-summary-grid,
+    .result-metrics,
+    .top-college-grid,
+    .guidance-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .predict-studio {
+        padding-top: 20px;
+    }
+
+    .predict-hero,
+    .quick-summary-card,
+    .input-panel,
+    .result-overview-card {
+        border-radius: 24px;
+    }
+
+    .predict-hero-grid,
+    .result-body,
+    .result-panel-head {
+        padding: 22px;
+    }
+
+    .quick-summary-grid,
+    .model-stat-grid,
+    .result-metrics,
+    .top-college-grid,
+    .guidance-section {
+        grid-template-columns: 1fr;
+    }
+
+    .result-panel-head,
+    .table-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .print-btn-pro,
+    .table-search {
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+@media print {
+    .predict-hero,
+    .quick-summary-strip,
+    .input-panel,
+    .guidance-section,
+    .table-toolbar,
+    .print-btn-pro {
+        display: none !important;
+    }
+
+    .predict-workspace {
+        display: block !important;
+    }
+
+    .result-overview-card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+
+    .results-table-wrap {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+}
+</style>
+
+<section class="predict-studio">
+    <div class="container-fluid px-lg-5 predict-shell">
+
+        <div class="predict-hero">
+            <div class="predict-hero-grid">
+                <div>
+                    <span class="predict-kicker">
+                        <i class="bi bi-magic"></i>
+                        FR3 College Prediction Engine
+                    </span>
+
+                    <h1 class="predict-title">
+                        Discover colleges that match your admission profile.
+                    </h1>
+
+                    <p class="predict-subtitle">
+                        Use MHT CET/JEE percentile, rank, category, quota, preferred branch, location, fees,
+                        NAAC/NIRF and 3-year cutoff trend to generate personalized admission recommendations.
+                    </p>
+                </div>
+
+                <div class="hero-model-card">
+                    <div class="model-card-top">
+                        <div>
+                            <h3>Model Intelligence</h3>
+                            {% if metadata %}
+                                <p>{{ metadata.algorithm }} model is ready for prediction.</p>
+                            {% else %}
+                                <p>Auto-training will run on first prediction if model is not available.</p>
+                            {% endif %}
+                        </div>
+                        <div class="model-icon">
+                            <i class="bi bi-cpu fs-3"></i>
+                        </div>
+                    </div>
+
+                    <div class="model-stat-grid">
+                        <div class="model-stat">
+                            {% if metadata %}
+                                <b>{{ metadata.algorithm }}</b>
+                                <span>Algorithm</span>
+                            {% else %}
+                                <b>Auto</b>
+                                <span>Train Mode</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="model-stat">
+                            {% if metadata %}
+                                <b>{{ metadata.mae_percentile_points }}</b>
+                                <span>MAE Points</span>
+                            {% else %}
+                                <b>Ready</b>
+                                <span>First Run</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="model-stat">
+                            <b>3-Year</b>
+                            <span>Cutoff Trend</span>
+                        </div>
+
+                        <div class="model-stat">
+                            <b>FR3</b>
+                            <span>Prediction Core</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-summary-strip">
+            <div class="quick-summary-card">
+                <div class="quick-summary-grid">
+                    <div class="quick-item">
+                        <div class="quick-icon"><i class="bi bi-card-checklist"></i></div>
+                        <div>
+                            <b>Student Profile</b>
+                            <span>Exam, rank, category and quota inputs</span>
+                        </div>
+                    </div>
+
+                    <div class="quick-item">
+                        <div class="quick-icon"><i class="bi bi-funnel"></i></div>
+                        <div>
+                            <b>Smart Filters</b>
+                            <span>City, fees, type, NAAC/NIRF and seats</span>
+                        </div>
+                    </div>
+
+                    <div class="quick-item">
+                        <div class="quick-icon"><i class="bi bi-graph-up"></i></div>
+                        <div>
+                            <b>Cutoff Logic</b>
+                            <span>Previous cutoff and 3-year trend analysis</span>
+                        </div>
+                    </div>
+
+                    <div class="quick-item">
+                        <div class="quick-icon"><i class="bi bi-award"></i></div>
+                        <div>
+                            <b>Probability</b>
+                            <span>High, Medium and Low admission chance</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="predict-workspace">
+            <aside class="input-panel">
+                <div class="input-panel-head">
+                    <span><i class="bi bi-sliders"></i> Prediction Control Panel</span>
+                    <h3>Student Input</h3>
+                    <p>Fill profile details and apply optional filters to refine recommendations.</p>
+                </div>
+
+                <div class="input-panel-body">
+                    <form method="post" novalidate class="predict-form">
+                        {% csrf_token %}
+
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <span>1</span>
+                                Exam Details
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.exam.label_tag }}
+                                {{ form.exam }}
+                                {{ form.exam.errors }}
+                            </div>
+
+                            <div class="row g-2">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.percentile.label_tag }}
+                                    {{ form.percentile }}
+                                    {{ form.percentile.errors }}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    {{ form.rank.label_tag }}
+                                    {{ form.rank }}
+                                    {{ form.rank.errors }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <span>2</span>
+                                Reservation & Course
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.category.label_tag }}
+                                {{ form.category }}
+                                {{ form.category.errors }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.home_region.label_tag }}
+                                {{ form.home_region }}
+                                {{ form.home_region.errors }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.university_quota.label_tag }}
+                                {{ form.university_quota }}
+                                {{ form.university_quota.errors }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.branch.label_tag }}
+                                {{ form.branch }}
+                                {{ form.branch.errors }}
+                            </div>
+
+                            <div class="mb-0">
+                                {{ form.round_name.label_tag }}
+                                {{ form.round_name }}
+                                {{ form.round_name.errors }}
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <span>3</span>
+                                Optional Filters
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.city.label_tag }}
+                                {{ form.city }}
+                                {{ form.city.errors }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.college_type.label_tag }}
+                                {{ form.college_type }}
+                                {{ form.college_type.errors }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.max_fees.label_tag }}
+                                {{ form.max_fees }}
+                                {{ form.max_fees.errors }}
+                            </div>
+
+                            <div class="row g-2">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.min_naac_score.label_tag }}
+                                    {{ form.min_naac_score }}
+                                    {{ form.min_naac_score.errors }}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    {{ form.max_nirf_rank.label_tag }}
+                                    {{ form.max_nirf_rank }}
+                                    {{ form.max_nirf_rank.errors }}
+                                </div>
+                            </div>
+
+                            <div class="row g-2">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.aptitude_score.label_tag }}
+                                    {{ form.aptitude_score }}
+                                    {{ form.aptitude_score.errors }}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    {{ form.top_n.label_tag }}
+                                    {{ form.top_n }}
+                                    {{ form.top_n.errors }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="predict-submit-btn">
+                            <i class="bi bi-search me-2"></i>
+                            Recommend Colleges
+                        </button>
+                    </form>
+                </div>
+            </aside>
+
+            <main class="result-panel">
+                <div class="result-overview-card">
+                    <div class="result-panel-head">
+                        <div>
+                            <span class="result-eyebrow">
+                                <i class="bi bi-list-stars"></i>
+                                Recommendation Output
+                            </span>
+
+                            <h2>Personalized College List</h2>
+
+                            {% if submitted %}
+                                <p>
+                                    {{ submitted.exam }} • Percentile {{ submitted.percentile }} •
+                                    {{ submitted.category }} • {{ submitted.branch }} • {{ submitted.round_name }}
+                                </p>
+                            {% else %}
+                                <p>Fill the student input form to generate recommendations.</p>
+                            {% endif %}
+                        </div>
+
+                        {% if results %}
+                            <button class="print-btn-pro" onclick="window.print()">
+                                <i class="bi bi-printer me-2"></i>
+                                Print Output
+                            </button>
+                        {% endif %}
+                    </div>
+
+                    <div class="result-body">
+                        {% if results %}
+                            <div class="result-metrics">
+                                <div class="result-metric">
+                                    <div class="result-metric-icon"><i class="bi bi-building"></i></div>
+                                    <b>{{ results|length }}</b>
+                                    <span>Total Recommendations</span>
+                                </div>
+
+                                <div class="result-metric">
+                                    <div class="result-metric-icon"><i class="bi bi-percent"></i></div>
+                                    <b>{{ results.0.probability }}%</b>
+                                    <span>Best Probability</span>
+                                </div>
+
+                                <div class="result-metric">
+                                    <div class="result-metric-icon"><i class="bi bi-award"></i></div>
+                                    <b>{{ results.0.level }}</b>
+                                    <span>Best Level</span>
+                                </div>
+
+                                <div class="result-metric">
+                                    <div class="result-metric-icon"><i class="bi bi-geo-alt"></i></div>
+                                    <b>{{ results.0.city }}</b>
+                                    <span>Top Location</span>
+                                </div>
+                            </div>
+
+                            <div class="top-college-grid">
+                                {% for row in results|slice:":3" %}
+                                    <div class="top-college-card">
+                                        <span class="rank-pill">
+                                            <i class="bi bi-trophy"></i>
+                                            Top {{ forloop.counter }}
+                                        </span>
+
+                                        <h4>{{ row.college_name }}</h4>
+
+                                        <p>
+                                            {{ row.branch }} • {{ row.city }} • {{ row.college_type }}
+                                        </p>
+
+                                        <div class="probability-strip">
+                                            <div class="probability-fill" style="width: {{ row.probability }}%;"></div>
+                                        </div>
+
+                                        <div class="top-meta">
+                                            <span>{{ row.probability }}% Chance</span>
+                                            <span>{{ row.level }}</span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="table-toolbar">
+                                <h4>Detailed Recommendations</h4>
+                                <input type="text" class="table-search" id="collegeSearch" placeholder="Search college, branch, city...">
+                            </div>
+
+                            <div class="results-table-wrap">
+                                <table class="table results-table align-middle" id="resultsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>College</th>
+                                            <th>Branch</th>
+                                            <th>City</th>
+                                            <th>Type</th>
+                                            <th>NAAC</th>
+                                            <th>NIRF</th>
+                                            <th>Fees</th>
+                                            <th>Seats</th>
+                                            <th>Prev. Cutoff</th>
+                                            <th>3-Year Trend</th>
+                                            <th>Pred. Cutoff</th>
+                                            <th>Your %</th>
+                                            <th>Probability</th>
+                                            <th>Level</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {% for row in results %}
+                                            <tr>
+                                                <td>
+                                                    <span class="table-badge">{{ forloop.counter }}</span>
+                                                </td>
+
+                                                <td class="college-name-cell">
+                                                    <b>{{ row.college_name }}</b>
+                                                    <small>{{ row.college_code }} • {{ row.exam }} • {{ row.round_name }}</small>
+                                                </td>
+
+                                                <td>{{ row.branch }}</td>
+                                                <td>{{ row.city }}</td>
+                                                <td>{{ row.college_type }}</td>
+
+                                                <td>
+                                                    {{ row.naac_grade }}<br>
+                                                    <small>{{ row.naac_score }}</small>
+                                                </td>
+
+                                                <td>{{ row.nirf_rank }}</td>
+                                                <td>₹{{ row.fees_per_year }}</td>
+                                                <td>{{ row.category_seats }} / {{ row.total_seats }}</td>
+
+                                                <td>
+                                                    {{ row.previous_year_closing_percentile }}%<br>
+                                                    <small>Rank {{ row.previous_year_closing_rank }}</small>
+                                                </td>
+
+                                                <td class="small">{{ row.cutoff_trend_3yr }}</td>
+                                                <td>{{ row.predicted_cutoff }}%</td>
+                                                <td>{{ row.student_percentile }}%</td>
+
+                                                <td class="probability-mini">
+                                                    <div class="probability-mini-track">
+                                                        <div class="probability-mini-fill" style="width: {{ row.probability }}%;"></div>
+                                                    </div>
+                                                    <strong>{{ row.probability }}%</strong>
+                                                </td>
+
+                                                <td>
+                                                    <span class="badge text-bg-{{ row.badge }}">{{ row.level }}</span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="empty-recommendation">
+                                <div>
+                                    <div class="empty-icon">
+                                        <i class="bi bi-search fs-1"></i>
+                                    </div>
+                                    <h3>No recommendations yet</h3>
+                                    <p>
+                                        Enter student exam details, select category/quota/branch, apply optional filters,
+                                        and click Recommend Colleges to generate a personalized list.
+                                    </p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="guidance-section">
+                    <div class="guidance-card">
+                        <div class="guidance-icon"><i class="bi bi-compass fs-4"></i></div>
+                        <h4>Improve Match Accuracy</h4>
+                        <p>Take the aptitude test so career suitability can be connected with college and branch recommendations.</p>
+                    </div>
+
+                    <div class="guidance-card">
+                        <div class="guidance-icon"><i class="bi bi-chat-dots fs-4"></i></div>
+                        <h4>Ask AI Counsellor</h4>
+                        <p>Use the chatbot to understand cutoffs, quota, probability and safer college options.</p>
+                    </div>
+
+                    <div class="guidance-card">
+                        <div class="guidance-icon"><i class="bi bi-person-video3 fs-4"></i></div>
+                        <h4>Book Human Counselling</h4>
+                        <p>Share your prediction output with certified counsellors for one-on-one admission guidance.</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("collegeSearch");
+    const table = document.getElementById("resultsTable");
+
+    if (searchInput && table) {
+        searchInput.addEventListener("keyup", function () {
+            const keyword = searchInput.value.toLowerCase();
+            const rows = table.querySelectorAll("tbody tr");
+
+            rows.forEach(function (row) {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(keyword) ? "" : "none";
+            });
+        });
+    }
+
+    const animatedBlocks = document.querySelectorAll(
+        ".input-panel, .result-overview-card, .guidance-card, .top-college-card"
+    );
+
+    const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = "fadeUpPredict .62s ease both";
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.10 });
+
+    animatedBlocks.forEach(function (block) {
+        observer.observe(block);
+    });
+});
+</script>
+{% endblock %}

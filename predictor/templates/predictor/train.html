@@ -1,0 +1,108 @@
+{% extends 'predictor/base.html' %}
+{% load static %}
+{% block title %}Train Model | College Predictor ML{% endblock %}
+{% block content %}
+<section class="section-pad pt-4">
+    <div class="container-fluid px-lg-5">
+        <div class="page-hero mb-4">
+            <span class="hero-pill"><i class="bi bi-cpu"></i>ML Operations</span>
+            <h1 class="hero-title mt-3 mb-3">Train, evaluate and publish the recommendation model.</h1>
+            <p class="hero-subtitle mb-0">Load the Mumbai/Pune dataset into SQLite, train RandomForest models, and review accuracy, classification report and confusion matrix outputs.</p>
+        </div>
+
+        <div class="row g-4 align-items-start">
+            <div class="col-lg-5">
+                <div class="panel-card p-4 p-lg-5 mb-4">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="icon-tile"><i class="bi bi-database-up fs-4"></i></div>
+                        <div>
+                            <h3 class="fw-black mb-0">Training Pipeline</h3>
+                            <small class="text-muted">Two-step execution</small>
+                        </div>
+                    </div>
+                    <form method="post" action="{% url 'load_dataset_view' %}" class="mb-3">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-primary w-100 rounded-pill py-3"><i class="bi bi-cloud-arrow-up me-2"></i>Step 1: Load Dataset into SQLite</button>
+                    </form>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-primary w-100 rounded-pill py-3"><i class="bi bi-cpu me-2"></i>Step 2: Train RandomForest ML Model</button>
+                    </form>
+                    <div class="alert alert-info rounded-4 mt-4 mb-0">
+                        <b>CLI alternative</b><br>
+                        <code>python manage.py load_dataset --clear</code><br>
+                        <code>python manage.py train_model</code>
+                    </div>
+                </div>
+
+                <div class="panel-card p-4">
+                    <span class="eyebrow"><i class="bi bi-table"></i>Dataset Summary</span>
+                    <div class="row g-3 mt-2">
+                        <div class="col-6"><div class="metric-card"><b>{{ summary.rows }}</b><span>Rows</span></div></div>
+                        <div class="col-6"><div class="metric-card"><b>{{ summary.colleges }}</b><span>Colleges</span></div></div>
+                        <div class="col-6"><div class="metric-card"><b>{{ summary.branches }}</b><span>Branches</span></div></div>
+                        <div class="col-6"><div class="metric-card"><b>{{ summary.categories }}</b><span>Categories</span></div></div>
+                        <div class="col-6"><div class="metric-card"><b>{{ summary.exams }}</b><span>Exams</span></div></div>
+                        <div class="col-6"><div class="metric-card"><b>{{ summary.cities }}</b><span>Cities</span></div></div>
+                    </div>
+                    <div class="small text-muted mt-3"><b>Years:</b> {{ summary.years }}<br><b>Source:</b> {{ summary.source }}</div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="panel-card p-4 p-lg-5">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                        <div>
+                            <span class="eyebrow"><i class="bi bi-clipboard-data"></i>Training Output</span>
+                            <h3 class="fw-black mt-3 mb-1">Model Evaluation Report</h3>
+                            <p class="text-muted mb-0">Saved model, classifier and generated training artifacts.</p>
+                        </div>
+                    </div>
+
+                    {% if metadata %}
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4"><div class="metric-card"><b>{{ metadata.training_accuracy }}%</b><span>Training Accuracy</span></div></div>
+                        <div class="col-md-4"><div class="metric-card"><b>{{ metadata.testing_accuracy }}%</b><span>Testing Accuracy</span></div></div>
+                        <div class="col-md-4"><div class="metric-card"><b>{{ metadata.r2_score }}</b><span>R² Score</span></div></div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <tbody>
+                                <tr><th>Algorithm</th><td>{{ metadata.algorithm }}</td></tr>
+                                <tr><th>Dataset Rows</th><td>{{ metadata.dataset_rows }}</td></tr>
+                                <tr><th>Target</th><td>{{ metadata.target }}</td></tr>
+                                <tr><th>MAE Percentile Points</th><td>{{ metadata.mae_percentile_points }}</td></tr>
+                                <tr><th>Classifier Algorithm</th><td>{{ metadata.classifier_algorithm }}</td></tr>
+                                <tr><th>Classification Target</th><td>{{ metadata.classification_target }}</td></tr>
+                                <tr><th>Years</th><td>{{ metadata.years }}</td></tr>
+                                <tr><th>Exams</th><td>{{ metadata.exams }}</td></tr>
+                                <tr><th>Total Colleges</th><td>{{ metadata.colleges|length }}</td></tr>
+                                <tr><th>Total Branches</th><td>{{ metadata.branches|length }}</td></tr>
+                                <tr><th>Total Categories</th><td>{{ metadata.categories|length }}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row g-3 mt-3">
+                        <div class="col-md-6"><div class="alert alert-success rounded-4 h-100"><b>Model Folder</b><br><code>ml_models/</code></div></div>
+                        <div class="col-md-6"><div class="alert alert-secondary rounded-4 h-100"><b>Reports Folder</b><br><code>training_reports/</code></div></div>
+                    </div>
+                    {% comment %} {% if metadata.confusion_matrix_static_url %}
+                    <div class="mt-4">
+                        <h5 class="fw-black">Confusion Matrix</h5>
+                        <img src="{% static metadata.confusion_matrix_static_url %}" class="img-fluid rounded-4 border shadow-sm" alt="Confusion Matrix">
+                    </div>
+                    {% endif %} {% endcomment %}
+                    {% else %}
+                    <div class="empty-state">
+                        <div>
+                            <i class="bi bi-cpu fs-1 d-block mb-3 text-primary"></i>
+                            Model is not trained yet. Load dataset and run training.
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

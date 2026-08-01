@@ -1,0 +1,42 @@
+{% extends 'predictor/base.html' %}
+{% block title %}My Counselling Sessions | College Predictor ML{% endblock %}
+{% block content %}
+<section class="section-pad pt-4">
+    <div class="container-fluid px-lg-5">
+        <div class="page-hero mb-4">
+            <span class="hero-pill"><i class="bi bi-calendar-check"></i>FR5.2 My Bookings</span>
+            <h1 class="hero-title mt-3 mb-3">Manage your counselling sessions.</h1>
+            <p class="hero-subtitle mb-0">Track payment status, session status, counsellor assignment and meeting links.</p>
+        </div>
+        <div class="panel-card p-4 p-lg-5">
+            <div class="d-flex justify-content-between flex-wrap gap-2 align-items-center mb-4">
+                <div>
+                    <span class="eyebrow"><i class="bi bi-journal-check"></i>Session Records</span>
+                    <h3 class="fw-black mt-3 mb-0">My Counselling Sessions</h3>
+                </div>
+                <a href="{% url 'counsellors' %}" class="btn btn-primary rounded-pill px-4"><i class="bi bi-plus-circle me-2"></i>Book New Session</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead><tr><th>Date</th><th>Counsellor</th><th>Mode</th><th>Amount</th><th>Payment</th><th>Status</th><th>Meeting</th></tr></thead>
+                    <tbody>
+                    {% for row in rows %}
+                        <tr>
+                            <td class="fw-semibold">{{ row.preferred_date }}<br><small class="text-muted">{{ row.preferred_time }}</small></td>
+                            <td>{{ row.counsellor.name|default:'Auto allocation' }}</td>
+                            <td><span class="badge text-bg-light">{{ row.mode }}</span></td>
+                            <td class="fw-bold">₹{{ row.amount }}</td>
+                            <td><span class="badge text-bg-{% if row.payment_status == 'Paid' %}success{% else %}warning{% endif %}">{{ row.payment_status }}</span></td>
+                            <td>{{ row.status }}</td>
+                            <td>{% if row.meeting_link %}<a class="btn btn-sm btn-outline-primary rounded-pill" href="{{ row.meeting_link }}" target="_blank">Open Link</a>{% else %}-{% endif %}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="7"><div class="empty-state">No sessions yet. Book your first counselling session.</div></td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

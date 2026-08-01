@@ -1,0 +1,69 @@
+{% extends 'predictor/base.html' %}
+{% block title %}Trending Courses | College Predictor ML{% endblock %}
+{% block content %}
+<section class="section-pad pt-4">
+    <div class="container-fluid px-lg-5">
+        <div class="page-hero mb-4">
+            <span class="hero-pill"><i class="bi bi-graph-up-arrow"></i>FR7 Trending Industry Course Analysis</span>
+            <h1 class="hero-title mt-3 mb-3">Course demand intelligence for future-ready choices.</h1>
+            <p class="hero-subtitle mb-0">Analyze job market growth, search interest, course enrollment growth and salary growth to identify trending courses and leading colleges.</p>
+        </div>
+        <div class="row g-4 mb-4">
+            <div class="col-lg-5">
+                <div class="panel-card p-4 p-lg-5 h-100">
+                    <span class="eyebrow"><i class="bi bi-calculator"></i>Demand Index Formula</span>
+                    <h3 class="fw-black mt-3 mb-3">Weighted market demand score</h3>
+                    <div class="display-6 fw-black mb-3">DI</div>
+                    <div class="fs-5 lh-lg">
+                        = 0.4 × Job Market Growth<br>
+                        + 0.3 × Search Interest Growth<br>
+                        + 0.2 × Course Enrollment Growth<br>
+                        + 0.1 × Salary Growth
+                    </div>
+                    <p class="text-muted mt-3 mb-0">{{ formula }}</p>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="panel-card p-4 p-lg-5 h-100">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                        <div>
+                            <span class="eyebrow"><i class="bi bi-printer"></i>Report</span>
+                            <h3 class="fw-black mt-3 mb-2">Trending course report</h3>
+                            <p class="text-muted mb-0">Use this page during counselling to connect course demand with college recommendations.</p>
+                        </div>
+                        <button class="btn btn-outline-primary rounded-pill px-4" onclick="window.print()"><i class="bi bi-printer me-2"></i>Print Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            {% for c in courses %}
+            <div class="col-xl-4 col-lg-6">
+                <div class="ui-card ui-card-hover p-4 h-100">
+                    <div class="d-flex justify-content-between gap-3 align-items-start mb-3">
+                        <div>
+                            <h4 class="fw-black mb-1">{{ c.course_name }}</h4>
+                            <div class="text-muted">{{ c.career_path }}</div>
+                        </div>
+                        <span class="badge text-bg-primary fs-6">DI {{ c.demand_index }}</span>
+                    </div>
+                    <div class="row g-2 mb-4">
+                        <div class="col-6"><div class="metric-card"><b>{{ c.average_salary_lpa }}</b><span>Avg Salary LPA</span></div></div>
+                        <div class="col-6"><div class="metric-card"><b>{{ c.job_growth_rate }}%</b><span>Job Growth</span></div></div>
+                        <div class="col-6"><div class="metric-card"><b>{{ c.search_interest_growth }}%</b><span>Search Growth</span></div></div>
+                        <div class="col-6"><div class="metric-card"><b>{{ c.course_enrollment_growth }}%</b><span>Enrollment</span></div></div>
+                    </div>
+                    <p><b>Required Skills:</b> {{ c.required_skills }}</p>
+                    <p><b>Branch Keywords:</b> {{ c.branch_keywords }}</p>
+                    <h6 class="fw-black">Leading Colleges From Dataset</h6>
+                    <pre class="small pre-wrap bg-light p-3 rounded-4 mb-0">{{ c.leading_colleges|default:'Load dataset to map leading colleges.' }}</pre>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12"><div class="empty-state">No trending course data available.</div></div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

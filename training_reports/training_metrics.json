@@ -1,0 +1,15 @@
+{
+  "classifier_algorithm": "RandomForestClassifier",
+  "classification_target": "admission_probability",
+  "training_accuracy": 100.0,
+  "testing_accuracy": 69.0,
+  "classes": [
+    "High",
+    "Medium",
+    "Low"
+  ],
+  "classification_report_txt": "C:\\Users\\COMPUTER\\Downloads\\college_recommendation_ALL\\college_recommendation_mumbai_pune_ml_django\\training_reports\\classification_report.txt",
+  "classification_report_csv": "C:\\Users\\COMPUTER\\Downloads\\college_recommendation_ALL\\college_recommendation_mumbai_pune_ml_django\\training_reports\\classification_report.csv",
+  "confusion_matrix_png": "C:\\Users\\COMPUTER\\Downloads\\college_recommendation_ALL\\college_recommendation_mumbai_pune_ml_django\\training_reports\\confusion_matrix.png",
+  "confusion_matrix_csv": "C:\\Users\\COMPUTER\\Downloads\\college_recommendation_ALL\\college_recommendation_mumbai_pune_ml_django\\training_reports\\confusion_matrix.csv"
+}

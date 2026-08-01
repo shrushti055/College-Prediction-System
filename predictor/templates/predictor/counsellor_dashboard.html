@@ -1,0 +1,41 @@
+{% extends 'predictor/base.html' %}
+{% block title %}Counsellor Dashboard | College Predictor ML{% endblock %}
+{% block content %}
+<section class="section-pad pt-4">
+    <div class="container-fluid px-lg-5">
+        <div class="page-hero mb-4">
+            <span class="hero-pill"><i class="bi bi-person-video3"></i>FR5.3 Counsellor Dashboard</span>
+            <h1 class="hero-title mt-3 mb-3">Counsellor session command center.</h1>
+            <p class="hero-subtitle mb-0">Review student profile, predicted colleges and aptitude results before the counselling session.</p>
+        </div>
+        <div class="panel-card p-4 p-lg-5">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                <div>
+                    <span class="eyebrow"><i class="bi bi-table"></i>Upcoming / Booked Sessions</span>
+                    <h3 class="fw-black mt-3 mb-0">Counsellor Dashboard</h3>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead><tr><th>Student</th><th>Slot</th><th>Counsellor</th><th>Payment</th><th>Profile</th><th>Prediction Snapshot</th><th>Aptitude</th></tr></thead>
+                    <tbody>
+                        {% for s in sessions %}
+                        <tr>
+                            <td class="fw-bold">{{ s.student_name }}<br><small class="text-muted">{{ s.email }} | {{ s.phone }}</small></td>
+                            <td>{{ s.preferred_date }}<br><small>{{ s.preferred_time }} | {{ s.mode }}</small></td>
+                            <td>{{ s.counsellor.name|default:'-' }}</td>
+                            <td><span class="badge text-bg-light">{{ s.payment_status }}</span><br><small>₹{{ s.amount }}</small></td>
+                            <td><pre class="small pre-wrap bg-light p-3 rounded-4 mb-0">{{ s.student_summary }}</pre></td>
+                            <td><pre class="small pre-wrap bg-light p-3 rounded-4 mb-0">{{ s.predicted_college_summary|truncatechars:600 }}</pre></td>
+                            <td><pre class="small pre-wrap bg-light p-3 rounded-4 mb-0">{{ s.aptitude_summary }}</pre></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7"><div class="empty-state">No counselling sessions found.</div></td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

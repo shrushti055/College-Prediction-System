@@ -1,0 +1,1073 @@
+{% extends 'predictor/base.html' %}
+{% block title %}Home | College Recommendation System{% endblock %}
+
+{% block content %}
+<style>
+/* ======================================================
+   Professional Animated Home Page UI
+   Scoped only to .home-pro-page
+====================================================== */
+.home-pro-page {
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 8% 8%, rgba(37, 99, 235, .13), transparent 30%),
+        radial-gradient(circle at 92% 18%, rgba(20, 184, 166, .12), transparent 32%),
+        linear-gradient(180deg, #f8fbff 0%, #eef4fb 50%, #ffffff 100%);
+}
+
+.home-pro-page .container-fluid {
+    position: relative;
+    z-index: 2;
+}
+
+.home-pro-page::before,
+.home-pro-page::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+    opacity: .55;
+    animation: floatBlob 9s ease-in-out infinite;
+}
+
+.home-pro-page::before {
+    width: 280px;
+    height: 280px;
+    left: -100px;
+    top: 190px;
+    background: linear-gradient(135deg, rgba(37,99,235,.18), rgba(20,184,166,.14));
+}
+
+.home-pro-page::after {
+    width: 220px;
+    height: 220px;
+    right: -90px;
+    top: 680px;
+    background: linear-gradient(135deg, rgba(124,58,237,.16), rgba(249,115,22,.14));
+    animation-delay: 1.3s;
+}
+
+@keyframes floatBlob {
+    0%, 100% { transform: translate3d(0,0,0) scale(1); }
+    50% { transform: translate3d(18px,-24px,0) scale(1.04); }
+}
+
+@keyframes fadeUpHome {
+    from { opacity: 0; transform: translateY(28px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes softPulse {
+    0%, 100% { box-shadow: 0 24px 70px rgba(37,99,235,.16); }
+    50% { box-shadow: 0 30px 90px rgba(20,184,166,.22); }
+}
+
+@keyframes lineMove {
+    from { transform: translateX(-40%); }
+    to { transform: translateX(40%); }
+}
+
+.home-hero {
+    padding: 38px 0 30px;
+}
+
+.home-hero-panel {
+    position: relative;
+    min-height: 560px;
+    border-radius: 38px;
+    overflow: hidden;
+    background:
+        linear-gradient(135deg, rgba(7, 17, 31, .94), rgba(29, 78, 216, .86), rgba(15, 118, 110, .86)),
+        url("https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1700&q=80");
+    background-size: cover;
+    background-position: center;
+    color: #ffffff;
+    box-shadow: 0 32px 90px rgba(15, 23, 42, .28);
+    animation: fadeUpHome .65s ease both;
+}
+
+.home-hero-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 72% 20%, rgba(255,255,255,.16), transparent 28%),
+        linear-gradient(90deg, rgba(7,17,31,.18), transparent);
+}
+
+.home-hero-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap: 36px;
+    min-height: 560px;
+    align-items: center;
+    padding: 56px;
+}
+
+.home-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.25);
+    backdrop-filter: blur(14px);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.home-title {
+    font-size: clamp(42px, 5.6vw, 78px);
+    line-height: .96;
+    font-weight: 950;
+    letter-spacing: -2.5px;
+    margin: 20px 0 18px;
+}
+
+.home-subtitle {
+    max-width: 760px;
+    color: rgba(255,255,255,.82);
+    font-size: 17px;
+    line-height: 1.75;
+    margin-bottom: 28px;
+}
+
+.home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.home-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 14px 21px;
+    border-radius: 999px;
+    font-weight: 900;
+    transition: .24s ease;
+}
+
+.home-btn:hover {
+    transform: translateY(-2px);
+}
+
+.home-btn.primary {
+    background: #ffffff;
+    color: #0f172a;
+}
+
+.home-btn.secondary {
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,.36);
+    background: rgba(255,255,255,.10);
+}
+
+.home-visual-card {
+    background: rgba(255,255,255,.13);
+    border: 1px solid rgba(255,255,255,.22);
+    backdrop-filter: blur(18px);
+    border-radius: 32px;
+    padding: 26px;
+    animation: softPulse 4.2s ease-in-out infinite;
+}
+
+.home-visual-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.home-visual-top h3 {
+    font-weight: 950;
+    margin: 0 0 6px;
+}
+
+.home-visual-top p {
+    color: rgba(255,255,255,.74);
+    font-size: 13px;
+    margin: 0;
+}
+
+.visual-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 21px;
+    display: grid;
+    place-items: center;
+    background: rgba(255,255,255,.17);
+    color: #ffffff;
+    flex: 0 0 auto;
+}
+
+.admission-score {
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    margin: 0 auto 24px;
+    display: grid;
+    place-items: center;
+    position: relative;
+    background: conic-gradient(#5eead4 0deg 248deg, rgba(255,255,255,.20) 248deg 360deg);
+}
+
+.admission-score::before {
+    content: "";
+    position: absolute;
+    inset: 14px;
+    border-radius: 50%;
+    background: rgba(7,17,31,.68);
+    backdrop-filter: blur(12px);
+}
+
+.admission-score span {
+    position: relative;
+    z-index: 2;
+    color: #ffffff;
+    font-size: 34px;
+    font-weight: 950;
+}
+
+.visual-mini-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.visual-mini-card {
+    border-radius: 20px;
+    padding: 15px;
+    background: rgba(255,255,255,.13);
+    border: 1px solid rgba(255,255,255,.18);
+    text-align: center;
+}
+
+.visual-mini-card b {
+    display: block;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 950;
+}
+
+.visual-mini-card span {
+    color: rgba(255,255,255,.72);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.home-floating-strip {
+    margin-top: -52px;
+    position: relative;
+    z-index: 5;
+    animation: fadeUpHome .8s ease .12s both;
+}
+
+.home-strip-card {
+    background: rgba(255,255,255,.96);
+    border: 1px solid rgba(226,232,240,.95);
+    box-shadow: 0 24px 70px rgba(15,23,42,.12);
+    border-radius: 30px;
+    padding: 24px;
+}
+
+.home-strip-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.home-step {
+    display: flex;
+    gap: 13px;
+    align-items: flex-start;
+}
+
+.home-step-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #2563eb, #14b8a6);
+    color: #ffffff;
+    flex: 0 0 auto;
+}
+
+.home-step b {
+    display: block;
+    font-weight: 950;
+    color: #0f172a;
+    margin-bottom: 3px;
+}
+
+.home-step span {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.metric-zone {
+    margin-top: 34px;
+    animation: fadeUpHome .85s ease .18s both;
+}
+
+.metric-card-pro {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(226,232,240,.92);
+    background: #ffffff;
+    border-radius: 26px;
+    padding: 22px;
+    min-height: 126px;
+    box-shadow: 0 20px 55px rgba(15,23,42,.07);
+    transition: .25s ease;
+}
+
+.metric-card-pro::before {
+    content: "";
+    position: absolute;
+    left: -30%;
+    top: 0;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(37,99,235,.08), transparent);
+    transform: translateX(-40%);
+    animation: lineMove 4s linear infinite;
+}
+
+.metric-card-pro:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 26px 65px rgba(15,23,42,.11);
+}
+
+.metric-card-pro .metric-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 15px;
+    display: grid;
+    place-items: center;
+    background: #eff6ff;
+    color: #2563eb;
+    margin-bottom: 14px;
+}
+
+.metric-card-pro b {
+    display: block;
+    color: #0f172a;
+    font-size: 28px;
+    font-weight: 950;
+    line-height: 1;
+}
+
+.metric-card-pro span {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 850;
+    margin-top: 8px;
+}
+
+.section-title-wrap {
+    margin: 58px 0 24px;
+    display: flex;
+    justify-content: space-between;
+    gap: 22px;
+    align-items: end;
+    animation: fadeUpHome .85s ease .2s both;
+}
+
+.section-eyebrow {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    padding: 7px 12px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 950;
+    margin-bottom: 13px;
+}
+
+.section-title {
+    font-size: clamp(28px, 3vw, 44px);
+    font-weight: 950;
+    color: #0f172a;
+    letter-spacing: -1.2px;
+    margin: 0;
+}
+
+.section-desc {
+    max-width: 560px;
+    color: #64748b;
+    margin: 12px 0 0;
+    line-height: 1.65;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+}
+
+.feature-card-pro {
+    background: #ffffff;
+    border: 1px solid rgba(226,232,240,.94);
+    border-radius: 30px;
+    padding: 26px;
+    box-shadow: 0 20px 55px rgba(15,23,42,.07);
+    min-height: 310px;
+    position: relative;
+    overflow: hidden;
+    transition: .28s ease;
+}
+
+.feature-card-pro::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 0%, rgba(37,99,235,.10), transparent 32%);
+    opacity: 0;
+    transition: .25s ease;
+}
+
+.feature-card-pro:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 75px rgba(15,23,42,.13);
+}
+
+.feature-card-pro:hover::before {
+    opacity: 1;
+}
+
+.feature-icon-pro {
+    width: 58px;
+    height: 58px;
+    border-radius: 21px;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2563eb, #14b8a6);
+    margin-bottom: 22px;
+    position: relative;
+    z-index: 2;
+}
+
+.feature-icon-pro.green {
+    background: linear-gradient(135deg, #16a34a, #14b8a6);
+}
+
+.feature-icon-pro.purple {
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+}
+
+.feature-icon-pro.orange {
+    background: linear-gradient(135deg, #f97316, #ef4444);
+}
+
+.feature-card-pro h4,
+.feature-card-pro p,
+.feature-card-pro a {
+    position: relative;
+    z-index: 2;
+}
+
+.feature-card-pro h4 {
+    color: #0f172a;
+    font-weight: 950;
+    margin-bottom: 12px;
+}
+
+.feature-card-pro p {
+    color: #64748b;
+    line-height: 1.65;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.feature-card-pro a {
+    color: #2563eb;
+    font-weight: 950;
+}
+
+.workflow-section {
+    margin-top: 56px;
+    border-radius: 34px;
+    padding: 34px;
+    background:
+        radial-gradient(circle at 0% 0%, rgba(37,99,235,.12), transparent 32%),
+        linear-gradient(135deg, #ffffff, #f8fafc);
+    border: 1px solid rgba(226,232,240,.94);
+    box-shadow: 0 24px 70px rgba(15,23,42,.08);
+}
+
+.workflow-grid {
+    display: grid;
+    grid-template-columns: .95fr 1.05fr;
+    gap: 28px;
+    align-items: center;
+}
+
+.workflow-list {
+    display: grid;
+    gap: 15px;
+}
+
+.workflow-item {
+    display: flex;
+    gap: 15px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    padding: 16px;
+    transition: .23s ease;
+}
+
+.workflow-item:hover {
+    transform: translateX(5px);
+    border-color: #bfdbfe;
+}
+
+.workflow-number {
+    width: 42px;
+    height: 42px;
+    border-radius: 15px;
+    display: grid;
+    place-items: center;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-weight: 950;
+    flex: 0 0 auto;
+}
+
+.workflow-item b {
+    display: block;
+    color: #0f172a;
+    font-weight: 950;
+    margin-bottom: 3px;
+}
+
+.workflow-item span {
+    display: block;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.dashboard-preview {
+    background: #0f172a;
+    border-radius: 30px;
+    padding: 22px;
+    color: #ffffff;
+    box-shadow: 0 28px 70px rgba(15,23,42,.25);
+}
+
+.preview-top {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 18px;
+}
+
+.preview-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ef4444;
+}
+
+.preview-dot:nth-child(2) { background: #f59e0b; }
+.preview-dot:nth-child(3) { background: #22c55e; }
+
+.preview-card {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 22px;
+    padding: 18px;
+    margin-bottom: 14px;
+}
+
+.preview-card b {
+    color: #ffffff;
+    font-weight: 950;
+}
+
+.preview-card span {
+    display: block;
+    color: rgba(255,255,255,.62);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.preview-progress {
+    height: 9px;
+    background: rgba(255,255,255,.12);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+.preview-progress div {
+    height: 100%;
+    width: 82%;
+    background: linear-gradient(90deg, #5eead4, #60a5fa);
+    border-radius: 999px;
+}
+
+.cta-section {
+    margin: 56px 0 68px;
+    border-radius: 36px;
+    padding: 42px;
+    background:
+        linear-gradient(135deg, rgba(7,17,31,.94), rgba(37,99,235,.88)),
+        url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1500&q=80");
+    background-size: cover;
+    background-position: center;
+    color: #ffffff;
+    box-shadow: 0 28px 80px rgba(15,23,42,.25);
+}
+
+.cta-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 22px;
+    align-items: center;
+}
+
+.cta-section h2 {
+    font-weight: 950;
+    letter-spacing: -1px;
+    margin-bottom: 10px;
+}
+
+.cta-section p {
+    color: rgba(255,255,255,.76);
+    margin: 0;
+    max-width: 750px;
+}
+
+@media (max-width: 1199px) {
+    .home-hero-grid,
+    .workflow-grid,
+    .cta-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-strip-grid,
+    .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .section-title-wrap {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 767px) {
+    .home-hero {
+        padding-top: 20px;
+    }
+
+    .home-hero-panel,
+    .home-strip-card,
+    .workflow-section,
+    .cta-section {
+        border-radius: 24px;
+    }
+
+    .home-hero-grid,
+    .workflow-section,
+    .cta-section {
+        padding: 24px;
+    }
+
+    .home-strip-grid,
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .visual-mini-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-actions {
+        flex-direction: column;
+    }
+
+    .home-btn {
+        justify-content: center;
+    }
+}
+</style>
+
+<section class="home-pro-page">
+    <div class="home-hero">
+        <div class="container-fluid px-lg-5">
+            <div class="home-hero-panel">
+                <div class="home-hero-grid">
+                    <div>
+                        <span class="home-kicker">
+                            <i class="bi bi-stars"></i>
+                            Admission Intelligence for Mumbai & Pune Colleges
+                        </span>
+
+                        <h1 class="home-title">
+                            Plan admissions with data, not guesswork.
+                        </h1>
+
+                        <p class="home-subtitle">
+                            A professional college recommendation platform combining ML prediction,
+                            3-year cut-off trends, NAAC/NIRF insights, aptitude mapping, counselling,
+                            and industry course demand analysis.
+                        </p>
+
+                        <div class="home-actions">
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'predict' %}" class="home-btn primary">
+                                    <i class="bi bi-magic"></i>
+                                    Start Prediction
+                                </a>
+                                <a href="{% url 'chatbot' %}" class="home-btn secondary">
+                                    <i class="bi bi-chat-dots"></i>
+                                    Ask Chatbot
+                                </a>
+                            {% else %}
+                                <a href="{% url 'register' %}" class="home-btn primary">
+                                    <i class="bi bi-person-plus"></i>
+                                    Register Student
+                                </a>
+                                <a href="{% url 'login' %}" class="home-btn secondary">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    Login
+                                </a>
+                            {% endif %}
+
+                            <a href="{% url 'trending_courses' %}" class="home-btn secondary">
+                                <i class="bi bi-graph-up-arrow"></i>
+                                Explore Trends
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="home-visual-card">
+                        <div class="home-visual-top">
+                            <div>
+                                <h3>Admission Readiness</h3>
+                                <p>Prediction + aptitude + counselling + career demand</p>
+                            </div>
+                            <div class="visual-icon">
+                                <i class="bi bi-diagram-3 fs-3"></i>
+                            </div>
+                        </div>
+
+                        <div class="admission-score">
+                            <span>92%</span>
+                        </div>
+
+                        <div class="visual-mini-grid">
+                            <div class="visual-mini-card">
+                                <b>{{ summary.rows|default:'1000' }}</b>
+                                <span>Dataset</span>
+                            </div>
+                            <div class="visual-mini-card">
+                                <b>{{ summary.exams|default:'2' }}</b>
+                                <span>Exams</span>
+                            </div>
+                            <div class="visual-mini-card">
+                                <b>{{ summary.cities|default:'2' }}</b>
+                                <span>Cities</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="home-floating-strip">
+                <div class="home-strip-card">
+                    <div class="home-strip-grid">
+                        <div class="home-step">
+                            <div class="home-step-icon"><i class="bi bi-ui-checks-grid"></i></div>
+                            <div>
+                                <b>Enter Profile</b>
+                                <span>Exam, percentile, rank, category, quota and branch preference.</span>
+                            </div>
+                        </div>
+
+                        <div class="home-step">
+                            <div class="home-step-icon"><i class="bi bi-cpu"></i></div>
+                            <div>
+                                <b>Run ML Prediction</b>
+                                <span>Get college list using dataset, cutoffs and filtering rules.</span>
+                            </div>
+                        </div>
+
+                        <div class="home-step">
+                            <div class="home-step-icon"><i class="bi bi-compass"></i></div>
+                            <div>
+                                <b>Check Aptitude</b>
+                                <span>Generate career suitability and course recommendation report.</span>
+                            </div>
+                        </div>
+
+                        <div class="home-step">
+                            <div class="home-step-icon"><i class="bi bi-person-video3"></i></div>
+                            <div>
+                                <b>Book Counselling</b>
+                                <span>Connect with certified counsellor using prediction context.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-zone">
+                <div class="row g-3">
+                    <div class="col-xl-2 col-md-4 col-6">
+                        <div class="metric-card-pro">
+                            <div class="metric-icon"><i class="bi bi-database"></i></div>
+                            <b>{{ summary.rows|default:'1000' }}</b>
+                            <span>Dataset Rows</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-2 col-md-4 col-6">
+                        <div class="metric-card-pro">
+                            <div class="metric-icon"><i class="bi bi-building"></i></div>
+                            <b>{{ summary.colleges|default:'--' }}</b>
+                            <span>Colleges</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-2 col-md-4 col-6">
+                        <div class="metric-card-pro">
+                            <div class="metric-icon"><i class="bi bi-diagram-2"></i></div>
+                            <b>{{ summary.branches|default:'--' }}</b>
+                            <span>Branches</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-2 col-md-4 col-6">
+                        <div class="metric-card-pro">
+                            <div class="metric-icon"><i class="bi bi-people"></i></div>
+                            <b>{{ summary.categories|default:'--' }}</b>
+                            <span>Categories</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-2 col-md-4 col-6">
+                        <div class="metric-card-pro">
+                            <div class="metric-icon"><i class="bi bi-journal-check"></i></div>
+                            <b>{{ summary.exams|default:'2' }}</b>
+                            <span>Exams</span>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-2 col-md-4 col-6">
+                        <div class="metric-card-pro">
+                            <div class="metric-icon"><i class="bi bi-geo-alt"></i></div>
+                            <b>{{ summary.cities|default:'2' }}</b>
+                            <span>Cities</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title-wrap">
+                <div>
+                    <span class="section-eyebrow">
+                        <i class="bi bi-grid"></i>
+                        Smart Admission Modules
+                    </span>
+                    <h2 class="section-title">Everything students need in one admission platform.</h2>
+                    <p class="section-desc">
+                        From college prediction to counselling and aptitude analysis, the system supports every major step
+                        of the decision-making process.
+                    </p>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card-pro">
+                    <div class="feature-icon-pro">
+                        <i class="bi bi-magic fs-4"></i>
+                    </div>
+                    <h4>ML College Prediction</h4>
+                    <p>
+                        Recommend colleges using percentile, rank, category, quota, branch, fees, seats,
+                        previous year cutoffs and 3-year trend analysis.
+                    </p>
+                    <a href="{% url 'predict' %}">
+                        Open predictor <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="feature-card-pro">
+                    <div class="feature-icon-pro green">
+                        <i class="bi bi-person-workspace fs-4"></i>
+                    </div>
+                    <h4>Human Counselling</h4>
+                    <p>
+                        View counsellor profiles, check availability, book one-on-one sessions and share student prediction
+                        context before counselling.
+                    </p>
+                    <a href="{% url 'counsellors' %}">
+                        View counsellors <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="feature-card-pro">
+                    <div class="feature-icon-pro purple">
+                        <i class="bi bi-compass fs-4"></i>
+                    </div>
+                    <h4>Aptitude Assessment</h4>
+                    <p>
+                        Generate RIASEC career suitability report and connect student strengths with branches,
+                        streams and course recommendations.
+                    </p>
+                    <a href="{% url 'aptitude_test' %}">
+                        Take test <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="feature-card-pro">
+                    <div class="feature-icon-pro orange">
+                        <i class="bi bi-bar-chart-line fs-4"></i>
+                    </div>
+                    <h4>Trending Courses</h4>
+                    <p>
+                        Analyze course demand using job market growth, search interest, enrollment growth
+                        and salary growth.
+                    </p>
+                    <a href="{% url 'trending_courses' %}">
+                        View trends <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <section class="workflow-section">
+                <div class="workflow-grid">
+                    <div>
+                        <span class="section-eyebrow">
+                            <i class="bi bi-lightning-charge"></i>
+                            Admission Workflow
+                        </span>
+                        <h2 class="section-title">A guided journey from score to final decision.</h2>
+                        <p class="section-desc">
+                            The platform combines ML prediction, aptitude insights, chatbot help and counsellor support
+                            to make the admission process easier and more reliable.
+                        </p>
+
+                        <div class="workflow-list mt-4">
+                            <div class="workflow-item">
+                                <div class="workflow-number">01</div>
+                                <div>
+                                    <b>Train ML Model</b>
+                                    <span>Load dataset and train model with classification report, accuracy and confusion matrix.</span>
+                                </div>
+                            </div>
+
+                            <div class="workflow-item">
+                                <div class="workflow-number">02</div>
+                                <div>
+                                    <b>Predict College List</b>
+                                    <span>Filter by city, college type, fees, NAAC/NIRF, seats and branch.</span>
+                                </div>
+                            </div>
+
+                            <div class="workflow-item">
+                                <div class="workflow-number">03</div>
+                                <div>
+                                    <b>Career & Counselling</b>
+                                    <span>Take aptitude test, ask chatbot and book expert counselling session.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-preview">
+                        <div class="preview-top">
+                            <span class="preview-dot"></span>
+                            <span class="preview-dot"></span>
+                            <span class="preview-dot"></span>
+                        </div>
+
+                        <div class="preview-card">
+                            <b>Top Prediction</b>
+                            <span>Pune Institute of Computer Technology · Computer Engineering</span>
+                            <div class="preview-progress"><div></div></div>
+                        </div>
+
+                        <div class="preview-card">
+                            <b>Admission Probability</b>
+                            <span>High probability based on percentile and previous year cutoff trend.</span>
+                            <div class="preview-progress"><div style="width: 74%;"></div></div>
+                        </div>
+
+                        <div class="preview-card mb-0">
+                            <b>Career Match</b>
+                            <span>Investigative + Conventional profile mapped to AI/ML and Data Science courses.</span>
+                            <div class="preview-progress"><div style="width: 88%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="cta-section">
+                <div class="cta-grid">
+                    <div>
+                        <h2>Ready to find the right college path?</h2>
+                        <p>
+                            Start with prediction, check your aptitude alignment and use counselling support to make the final choice confidently.
+                        </p>
+                    </div>
+
+                    <div class="home-actions">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'predict' %}" class="home-btn primary">
+                                <i class="bi bi-magic"></i>
+                                Start Now
+                            </a>
+                        {% else %}
+                            <a href="{% url 'register' %}" class="home-btn primary">
+                                <i class="bi bi-person-plus"></i>
+                                Create Account
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'aptitude_test' %}" class="home-btn secondary">
+                            <i class="bi bi-compass"></i>
+                            Take Aptitude Test
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const cards = document.querySelectorAll(
+        ".metric-card-pro, .feature-card-pro, .workflow-section, .cta-section"
+    );
+
+    const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = "fadeUpHome .65s ease both";
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+
+    cards.forEach(function (card) {
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

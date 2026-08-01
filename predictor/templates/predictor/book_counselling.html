@@ -1,0 +1,54 @@
+{% extends 'predictor/base.html' %}
+{% block title %}Book Human Counselling | College Predictor ML{% endblock %}
+{% block content %}
+<section class="section-pad pt-4">
+    <div class="container-fluid px-lg-5">
+        <div class="page-hero mb-4">
+            <span class="hero-pill"><i class="bi bi-calendar-plus"></i>FR5.2 Booking + Payment Handoff</span>
+            <h1 class="hero-title mt-3 mb-3">Schedule a personalized counselling session.</h1>
+            <p class="hero-subtitle mb-0">Select counsellor, choose mode and slot, then continue to secure booking confirmation.</p>
+        </div>
+        <div class="row justify-content-center g-4">
+            <div class="col-xl-4 col-lg-5">
+                <div class="panel-card p-4 sticky-lg-top form-sticky">
+                    <span class="eyebrow"><i class="bi bi-paperclip"></i>Attached Student Context</span>
+                    {% if selected_counsellor %}
+                    <div class="alert alert-success rounded-4 mt-3">
+                        <b>{{ selected_counsellor.name }}</b><br>
+                        ₹{{ selected_counsellor.fee_per_session }} • {{ selected_counsellor.specialization }}
+                    </div>
+                    {% endif %}
+                    <div class="glass-list mt-3">
+                        <div class="glass-list-item"><i class="bi bi-person text-primary"></i><span><b>Profile:</b><br>{{ profile_summary }}</span></div>
+                        <div class="glass-list-item"><i class="bi bi-list-stars text-primary"></i><span><b>Latest prediction:</b><br>{{ latest_prediction.top_result|default:'No prediction history found' }}</span></div>
+                        <div class="glass-list-item"><i class="bi bi-compass text-primary"></i><span><b>Latest aptitude:</b><br>{% if latest_aptitude %}{{ latest_aptitude.dominant_code }} - {{ latest_aptitude.career_cluster }}{% else %}Not completed{% endif %}</span></div>
+                    </div>
+                    <a href="{% url 'chatbot' %}" class="btn btn-outline-primary rounded-pill w-100 mt-4">Back to Chatbot</a>
+                </div>
+            </div>
+            <div class="col-xl-7 col-lg-7">
+                <div class="panel-card p-4 p-lg-5">
+                    <span class="eyebrow"><i class="bi bi-ui-checks"></i>Booking Details</span>
+                    <h3 class="fw-black mt-3 mb-1">Complete session request</h3>
+                    <p class="text-muted mb-4">Enter your preferred slot and counselling topic.</p>
+                    <form method="post" class="row g-3">
+                        {% csrf_token %}
+                        <div class="col-12">{{ form.counsellor.label_tag }}{{ form.counsellor }}{{ form.counsellor.errors }}</div>
+                        <div class="col-md-6">{{ form.student_name.label_tag }}{{ form.student_name }}{{ form.student_name.errors }}</div>
+                        <div class="col-md-6">{{ form.email.label_tag }}{{ form.email }}{{ form.email.errors }}</div>
+                        <div class="col-md-6">{{ form.phone.label_tag }}{{ form.phone }}{{ form.phone.errors }}</div>
+                        <div class="col-md-6">{{ form.mode.label_tag }}{{ form.mode }}{{ form.mode.errors }}</div>
+                        <div class="col-md-6">{{ form.preferred_date.label_tag }}{{ form.preferred_date }}{{ form.preferred_date.errors }}</div>
+                        <div class="col-md-6">{{ form.preferred_time.label_tag }}{{ form.preferred_time }}{{ form.preferred_time.errors }}</div>
+                        <div class="col-12">{{ form.topic.label_tag }}{{ form.topic }}{{ form.topic.errors }}</div>
+                        <div class="col-12 d-flex flex-wrap gap-2 mt-3">
+                            <button class="btn btn-primary rounded-pill px-4 py-2"><i class="bi bi-credit-card me-2"></i>Continue to Payment</button>
+                            <a href="{% url 'counsellors' %}" class="btn btn-outline-primary rounded-pill px-4 py-2">View Counsellors</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

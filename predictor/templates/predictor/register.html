@@ -1,0 +1,47 @@
+{% extends 'predictor/base.html' %}
+{% block title %}Register | College Predictor ML{% endblock %}
+{% block content %}
+<section class="auth-layout">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-lg-11">
+                <div class="auth-shell row g-0">
+                    <div class="col-lg-5 d-none d-lg-block">
+                        <div class="auth-brand-panel h-100">
+                            <span class="hero-pill"><i class="bi bi-person-plus"></i>New admission profile</span>
+                            <h1 class="fw-black display-5 mt-4">Create your smart admission workspace.</h1>
+                            <p class="mt-3 opacity-75">Register once and use prediction, aptitude, chatbot, counselling bookings and history tracking.</p>
+                            <div class="timeline-list mt-4">
+                                <div class="timeline-item"><div class="timeline-dot">1</div><div><b>Create account</b><br><span class="opacity-75">Secure student access</span></div></div>
+                                <div class="timeline-item"><div class="timeline-dot">2</div><div><b>Predict colleges</b><br><span class="opacity-75">MHT CET / JEE based</span></div></div>
+                                <div class="timeline-item"><div class="timeline-dot">3</div><div><b>Get guidance</b><br><span class="opacity-75">Chatbot + counsellor support</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="auth-form-panel">
+                            <span class="eyebrow"><i class="bi bi-mortarboard"></i>Student Registration</span>
+                            <h2 class="fw-black mt-3 mb-1">Create account</h2>
+                            <p class="text-muted mb-4">Fill the details below to start your admission planning journey.</p>
+                            <form method="post" class="row g-3">
+                                {% csrf_token %}
+                                {% for field in form %}
+                                <div class="col-md-{% if forloop.counter <= 2 %}6{% else %}12{% endif %}">
+                                    <label class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% for error in field.errors %}<div class="text-danger small fw-bold mt-1">{{ error }}</div>{% endfor %}
+                                </div>
+                                {% endfor %}
+                                <div class="col-12 mt-3">
+                                    <button class="btn btn-primary w-100 rounded-pill py-3">Create Student Account</button>
+                                </div>
+                            </form>
+                            <p class="text-center small mt-4 mb-0">Already registered? <a class="fw-bold" href="{% url 'login' %}">Login here</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

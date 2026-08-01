@@ -1,0 +1,74 @@
+{% extends 'predictor/base.html' %}
+{% block title %}Career Suitability Report | College Predictor ML{% endblock %}
+{% block content %}
+<section class="section-pad pt-4">
+    <div class="container-fluid px-lg-5">
+        <div class="page-hero mb-4">
+            <span class="hero-pill"><i class="bi bi-file-earmark-bar-graph"></i>FR6.2 + FR6.3 Career Suitability Report</span>
+            <h1 class="hero-title mt-3 mb-3">Your career suitability report is ready.</h1>
+            <p class="hero-subtitle mb-0">RIASEC scores are mapped with career clusters, recommended streams and college/course options.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="panel-card p-4 p-lg-5 h-100">
+                    <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+                        <div>
+                            <span class="eyebrow"><i class="bi bi-radar"></i>RIASEC Scores</span>
+                            <h3 class="fw-black mt-3 mb-0">Score Profile</h3>
+                        </div>
+                        <button class="btn btn-outline-primary rounded-pill no-print" onclick="window.print()"><i class="bi bi-printer"></i></button>
+                    </div>
+                    <div class="glass-list">
+                        <div class="glass-list-item"><span class="fw-bold flex-grow-1">Realistic</span><span class="badge text-bg-primary">{{ result.realistic }}</span></div>
+                        <div class="glass-list-item"><span class="fw-bold flex-grow-1">Investigative</span><span class="badge text-bg-primary">{{ result.investigative }}</span></div>
+                        <div class="glass-list-item"><span class="fw-bold flex-grow-1">Artistic</span><span class="badge text-bg-primary">{{ result.artistic }}</span></div>
+                        <div class="glass-list-item"><span class="fw-bold flex-grow-1">Social</span><span class="badge text-bg-primary">{{ result.social }}</span></div>
+                        <div class="glass-list-item"><span class="fw-bold flex-grow-1">Enterprising</span><span class="badge text-bg-primary">{{ result.enterprising }}</span></div>
+                        <div class="glass-list-item"><span class="fw-bold flex-grow-1">Conventional</span><span class="badge text-bg-primary">{{ result.conventional }}</span></div>
+                    </div>
+                    <hr>
+                    <div class="row g-3">
+                        <div class="col-6"><div class="metric-card"><b>{{ result.dominant_code }}</b><span>Dominant Code</span></div></div>
+                        <div class="col-6"><div class="metric-card"><b>{{ result.secondary_code }}</b><span>Secondary Code</span></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="panel-card p-4 p-lg-5 mb-4">
+                    <span class="eyebrow"><i class="bi bi-diagram-3"></i>Personalized Career Cluster</span>
+                    <h3 class="fw-black mt-3 mb-3">{{ result.career_cluster }}</h3>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6"><div class="metric-card"><b>{{ result.recommended_stream }}</b><span>Recommended Stream</span></div></div>
+                        <div class="col-md-6"><div class="metric-card"><b>{{ result.dominant_code }}{{ result.secondary_code }}</b><span>Career Code</span></div></div>
+                    </div>
+                    <p><b>Recommended Branches:</b> {{ result.recommended_branches }}</p>
+                    <p><b>Strengths:</b> {{ result.strengths }}</p>
+                    <div class="alert alert-info rounded-4 mb-0">{{ result.report_text }}</div>
+                </div>
+
+                <div class="panel-card p-4 p-lg-5">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                        <div>
+                            <span class="eyebrow"><i class="bi bi-building"></i>College Course Match</span>
+                            <h3 class="fw-black mt-3 mb-0">Recommended Colleges</h3>
+                        </div>
+                        <a href="{% url 'predict' %}" class="btn btn-primary rounded-pill px-4">Use in Prediction</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead><tr><th>College</th><th>Branch</th><th>City</th><th>NAAC</th><th>NIRF</th><th>Fees</th></tr></thead>
+                            <tbody>
+                            {% for c in college_rows %}
+                                <tr><td class="fw-bold">{{ c.college_name }}</td><td>{{ c.branch }}</td><td>{{ c.city }}</td><td>{{ c.naac_grade }} / {{ c.naac_score }}</td><td>{{ c.nirf_rank }}</td><td>₹{{ c.fees_per_year }}</td></tr>
+                            {% empty %}
+                                <tr><td colspan="6"><div class="empty-state">Load dataset first to see matching colleges.</div></td></tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

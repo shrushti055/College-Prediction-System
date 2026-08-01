@@ -1,0 +1,107 @@
+{% extends 'predictor/base.html' %}
+{% block title %}AI Chatbot Counselling | College Predictor ML{% endblock %}
+{% block content %}
+<section class="section-pad pt-4">
+    <div class="container-fluid px-lg-5">
+        <div class="page-hero mb-4">
+            <span class="hero-pill"><i class="bi bi-chat-dots"></i>FR4 AI Chatbot Counselling</span>
+            <h1 class="hero-title mt-3 mb-3">Ask admission questions with your profile context.</h1>
+            <p class="hero-subtitle mb-0">The chatbot uses prediction data, historical cutoffs, FAQ knowledge, aptitude context and counselling handoff logic.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-xl-4 col-lg-5">
+                <div class="panel-card p-4 mb-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="icon-tile"><i class="bi bi-person-badge fs-4"></i></div>
+                        <div>
+                            <h4 class="fw-black mb-0">Student Context</h4>
+                            <small class="text-muted">Used for better suggestions</small>
+                        </div>
+                    </div>
+                    <div class="alert alert-info rounded-4 small mb-0">{{ profile_summary }}</div>
+                </div>
+
+                <div class="panel-card p-4">
+                    <span class="eyebrow"><i class="bi bi-lightning-charge"></i>Quick Prompts</span>
+                    <div class="d-grid gap-2 small mt-3">
+                        <button class="btn btn-outline-primary text-start rounded-4 quick-q" data-q="Given my JEE percentile, which colleges are safer for me?">JEE safe colleges</button>
+                        <button class="btn btn-outline-primary text-start rounded-4 quick-q" data-q="Show previous year cutoff trend for my branch and category.">Previous year cutoff trend</button>
+                        <button class="btn btn-outline-primary text-start rounded-4 quick-q" data-q="Top Pune colleges by NIRF and NAAC rating.">Top Pune by NAAC/NIRF</button>
+                        <button class="btn btn-outline-primary text-start rounded-4 quick-q" data-q="Which colleges have lower fees in Mumbai?">Low fee Mumbai colleges</button>
+                        <button class="btn btn-outline-primary text-start rounded-4 quick-q" data-q="I want to book human counselling session.">Book human counselling</button>
+                        <button class="btn btn-outline-primary text-start rounded-4 quick-q" data-q="Show trending courses and demand index.">Trending course demand index</button>
+                    </div>
+                    <div class="d-grid gap-2 mt-4">
+                        <a href="{% url 'book_counselling' %}" class="btn btn-primary rounded-pill"><i class="bi bi-calendar-plus me-2"></i>Book Counselling</a>
+                        <a href="{% url 'aptitude_test' %}" class="btn btn-outline-primary rounded-pill">Take Aptitude Test</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-8 col-lg-7">
+                <div class="panel-card p-4 p-lg-5 mb-4">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
+                        <div>
+                            <span class="eyebrow"><i class="bi bi-send"></i>Ask Counsellor Bot</span>
+                            <h3 class="fw-black mt-3 mb-1">Your Question</h3>
+                            <p class="text-muted mb-0">Ask about college probability, cutoffs, fees, quota, aptitude or counselling process.</p>
+                        </div>
+                        <a href="{% url 'predict' %}" class="btn btn-outline-primary rounded-pill">Update Prediction</a>
+                    </div>
+                    <form method="post" id="chatForm">
+                        {% csrf_token %}
+                        {{ form.question.label_tag }}
+                        {{ form.question }}
+                        {{ form.question.errors }}
+                        <button class="btn btn-primary rounded-pill mt-3 px-4 py-2"><i class="bi bi-send me-2"></i>Ask Chatbot</button>
+                    </form>
+                </div>
+
+                {% if response %}
+                <div class="panel-card p-4 p-lg-5 mb-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                        <h4 class="fw-black mb-0"><i class="bi bi-robot me-2 text-primary"></i>Chatbot Answer</h4>
+                        <span class="badge text-bg-primary">{{ response.intent }}</span>
+                    </div>
+                    <pre class="chatbot-answer p-4 rounded-4 bg-light mb-3">{{ response.answer }}</pre>
+                    {% if response.intent == 'human_handoff' %}
+                        <a href="{% url 'book_counselling' %}" class="btn btn-success rounded-pill"><i class="bi bi-calendar-plus me-2"></i>Continue to Human Counselling</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="panel-card p-4 p-lg-5">
+                    <span class="eyebrow"><i class="bi bi-clock-history"></i>Recent Conversation</span>
+                    <h4 class="fw-black mt-3 mb-3">Chat History</h4>
+                    {% if chats %}
+                        {% for chat in chats %}
+                        <div class="timeline-item">
+                            <div class="timeline-dot"><i class="bi bi-chat-left-text"></i></div>
+                            <div class="w-100">
+                                <div class="small text-muted">{{ chat.created_at|date:'d M Y, h:i A' }} • {{ chat.intent }}</div>
+                                <div class="fw-bold mt-1">You: {{ chat.question }}</div>
+                                <pre class="chatbot-answer mt-2 mb-0 small bg-light p-3 rounded-4">{{ chat.answer }}</pre>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">No chat history yet. Ask your first counselling query.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+document.querySelectorAll('.quick-q').forEach(function(btn){
+    btn.addEventListener('click', function(){
+        const textarea = document.querySelector('.chatbot-input, textarea[name="question"]');
+        if (textarea) {
+            textarea.value = btn.getAttribute('data-q');
+            textarea.focus();
+        }
+    });
+});
+</script>
+{% endblock %}
