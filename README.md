@@ -173,16 +173,15 @@ python manage.py runserver
 ## Screenshots
 
 ### Home Page
-![Home Page](screenshots/home.png)
+![Home Page](screenshots/home.jpeg)
 
 ### Login / Registration
-![Login Page](screenshots/login.png)
+![Login Page](screenshots/register.jpeg)
 
 ### Student Profile Input
-![Student Profile](screenshots/profile.png)
+![Student Profile](screenshots/predict.jpeg)
 
 ### College Recommendation Results
-![Recommendation Results](screenshots/results.png)
+![Recommendation Results](screenshots/perdiction.jpeg)
 
-### Admin Dashboard
-![Admin Dashboard](screenshots/admin.png)
+
