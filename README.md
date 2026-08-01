@@ -166,3 +166,23 @@ python manage.py seed_career_services
 python manage.py train_model
 python manage.py runserver
 ```
+
+
+
+
+## Screenshots
+
+### Home Page
+![Home Page](screenshots/home.png)
+
+### Login / Registration
+![Login Page](screenshots/login.png)
+
+### Student Profile Input
+![Student Profile](screenshots/profile.png)
+
+### College Recommendation Results
+![Recommendation Results](screenshots/results.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/admin.png)
